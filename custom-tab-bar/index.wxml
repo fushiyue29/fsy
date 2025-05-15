@@ -1,0 +1,12 @@
+<!-- custom-tab-bar/index.wxml -->
+<cover-view class="tab-bar {{hideTabBar ? 'tab-bar-hidden' : ''}}">
+  <cover-view class="tab-bar-border"></cover-view>
+  <cover-view wx:for="{{list}}" wx:key="index" class="tab-bar-item" data-path="{{item.pagePath}}" data-index="{{index}}" bindtap="switchTab">
+    <cover-view class="icon-container {{selected === index ? 'selected' : ''}}">
+      <cover-view class="material-icons">{{item.iconText}}</cover-view>
+      
+      <cover-view wx:if="{{index === 2 && !pageReady}}" class="backup-icon">●</cover-view>
+    </cover-view>
+    <cover-view class="tab-bar-text" style="color: {{selected === index ? selectedColor : color}}">{{item.text}}</cover-view>
+  </cover-view>
+</cover-view> 
