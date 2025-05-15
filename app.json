@@ -1,0 +1,45 @@
+{
+    "pages": [
+        "pages/index/index",
+        "pages/device/device",
+        "pages/monitor/monitor",
+        "pages/history/history",
+        "pages/user/user",
+        "pages/iconGenerator/iconGenerator"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#4696f7",
+        "navigationBarTitleText": "多通道脉搏监测",
+        "navigationBarTextStyle": "white"
+    },
+    "tabBar": {
+        "custom": true,
+        "color": "#999999",
+        "selectedColor": "#4696f7",
+        "backgroundColor": "#ffffff",
+        "list": [
+            {
+                "pagePath": "pages/index/index",
+                "text": "首页"
+            },
+            {
+                "pagePath": "pages/device/device",
+                "text": "设备"
+            },
+            {
+                "pagePath": "pages/monitor/monitor",
+                "text": "监测"
+            },
+            {
+                "pagePath": "pages/history/history",
+                "text": "历史"
+            },
+            {
+                "pagePath": "pages/user/user",
+                "text": "我的"
+            }
+        ]
+    },
+    "sitemapLocation": "sitemap.json"
+}

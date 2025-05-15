@@ -1,0 +1,474 @@
+/* pages/monitor/monitor.wxss */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* 未连接设备的提示样式 */
+.no-device {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30rpx;
+  text-align: center;
+}
+
+.no-device-text {
+  font-size: 36rpx;
+  margin-bottom: 20rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.no-device-message {
+  font-size: 28rpx;
+  color: #e64340;
+  margin-bottom: 40rpx;
+}
+
+.connect-button {
+  background-color: #07c160;
+  color: white;
+  border-radius: 8rpx;
+  font-size: 30rpx;
+  padding: 16rpx 40rpx;
+}
+
+/* 模拟模式指示器 */
+.simulation-indicator {
+  position: fixed;
+  top: 20rpx;
+  right: 20rpx;
+  background-color: rgba(255, 152, 0, 0.8);
+  color: white;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  z-index: 999;
+}
+
+/* 监测区域样式 */
+.monitor-area {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* 控制栏样式 */
+.control-bar {
+  display: flex;
+  justify-content: space-around;
+  padding: 20rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #e0e0e0;
+}
+
+.control-btn {
+  padding: 12rpx 30rpx;
+  background-color: #f0f0f0;
+  border-radius: 30rpx;
+  font-size: 28rpx;
+  color: #333;
+  text-align: center;
+  min-width: 180rpx;
+}
+
+.control-btn.active {
+  background-color: #07c160;
+  color: white;
+}
+
+.control-btn.active-recording {
+  background-color: #e64340;
+  color: white;
+}
+
+/* 记录信息样式 */
+.record-info {
+  background-color: rgba(230, 67, 64, 0.1);
+  padding: 15rpx;
+  display: flex;
+  justify-content: space-between;
+  font-size: 24rpx;
+  color: #e64340;
+}
+
+/* 视图切换标签样式 */
+.view-tabs {
+  display: flex;
+  background-color: #fff;
+  border-bottom: 1rpx solid #e0e0e0;
+}
+
+.view-tab {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+}
+
+.view-tab.active {
+  color: #07c160;
+  font-weight: bold;
+}
+
+.view-tab.active:after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  height: 6rpx;
+  background-color: #07c160;
+  border-radius: 3rpx;
+}
+
+/* 通道切换样式 */
+.channel-toggle {
+  display: flex;
+  padding: 15rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #e0e0e0;
+}
+
+.channel-btn {
+  flex: 1;
+  text-align: center;
+  padding: 10rpx 0;
+  margin: 0 10rpx;
+  border-radius: 6rpx;
+  font-size: 26rpx;
+  color: #666;
+  border: 1rpx solid #e0e0e0;
+}
+
+.channel-btn.active {
+  color: white;
+  border: none;
+}
+
+/* 实时波形视图样式 */
+.realtime-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f8f8;
+  padding: 15rpx;
+  overflow: hidden;
+}
+
+/* 波形图容器样式 */
+.waveform-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fafafa;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  position: relative;
+  padding: 10rpx 0;
+}
+
+/* Canvas波形图样式 */
+.waveform-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* 网格线样式 - 更淡更细 */
+.grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.grid-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1rpx;
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.grid-line:nth-child(1) { top: 20%; }
+.grid-line:nth-child(2) { top: 40%; }
+.grid-line:nth-child(3) { top: 60%; }
+.grid-line:nth-child(4) { top: 80%; }
+.grid-line:nth-child(5) { top: 100%; }
+
+.grid-line-vertical {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1rpx;
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.grid-line-vertical:nth-child(6) { left: 20%; }
+.grid-line-vertical:nth-child(7) { left: 40%; }
+.grid-line-vertical:nth-child(8) { left: 60%; }
+.grid-line-vertical:nth-child(9) { left: 80%; }
+.grid-line-vertical:nth-child(10) { left: 100%; }
+
+/* 波形面板样式 */
+.waveform-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 25rpx;
+  position: relative;
+  z-index: 2;
+  min-height: 190rpx;
+  height: 25vh;
+  max-height: 400rpx;
+}
+
+.waveform-label {
+  display: flex;
+  justify-content: space-between;
+  padding: 12rpx 20rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.current-value {
+  font-size: 28rpx;
+}
+
+.waveform-chart {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  padding: 10rpx;
+  min-height: 150rpx;
+}
+
+/* 更平滑的波形线效果 */
+.waveform-line {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  bottom: 0;
+}
+
+/* 数据点样式 - 使用线条连接实现更平滑的效果 */
+.data-point {
+  position: absolute;
+  width: 2rpx;
+  bottom: 0;
+  transform: translateX(-50%);
+  background-color: currentColor;
+  opacity: 0.8;
+}
+
+/* 添加数据点前后的辅助元素，用于模拟曲线效果 */
+.data-point::before,
+.data-point::after {
+  content: "";
+  position: absolute;
+  width: 1rpx;
+  height: 100%;
+  background-color: currentColor;
+  opacity: 0.4;
+}
+
+.data-point::before {
+  left: -1rpx;
+  height: calc(100% - 1rpx);
+}
+
+.data-point::after {
+  left: 1rpx;
+  height: calc(100% - 2rpx);
+}
+
+/* 安全范围区域样式 - 更不显眼 */
+.safe-range {
+  position: absolute;
+  width: 100%;
+  background-color: rgba(0, 200, 83, 0.05);
+  border-top: 1rpx dashed rgba(0, 200, 83, 0.2);
+  border-bottom: 1rpx dashed rgba(0, 200, 83, 0.2);
+  z-index: 1;
+}
+
+.safe-range-label {
+  position: absolute;
+  right: 10rpx;
+  font-size: 20rpx;
+  color: rgba(0, 150, 0, 0.4);
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 2rpx 6rpx;
+  border-radius: 4rpx;
+}
+
+.safe-range-max {
+  top: 0;
+  transform: translateY(-50%);
+}
+
+.safe-range-min {
+  bottom: 0;
+  transform: translateY(50%);
+}
+
+/* 警告状态样式 */
+.value-warning {
+  color: #e64340 !important;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.status-indicator {
+  display: inline-block;
+  margin-left: 6rpx;
+  font-size: 24rpx;
+  width: 24rpx;
+  height: 24rpx;
+  line-height: 24rpx;
+  text-align: center;
+  border-radius: 50%;
+}
+
+.value-warning .status-indicator {
+  background-color: #e64340;
+  color: white;
+}
+
+/* 数据分析视图样式 */
+.analysis-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f8f8;
+  padding: 15rpx;
+  overflow-y: auto;
+}
+
+.chart-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  padding: 20rpx;
+  margin-bottom: 15rpx;
+}
+
+.chart-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  text-align: center;
+  color: #333;
+}
+
+/* 统计区域样式 */
+.stats-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.stats-item {
+  border-radius: 8rpx;
+  overflow: hidden;
+  border-left: 8rpx solid;
+  background-color: #f9f9f9;
+}
+
+.stats-header {
+  padding: 15rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.stats-body {
+  padding: 10rpx 15rpx;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8rpx 0;
+  font-size: 26rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.stats-row:last-child {
+  border-bottom: none;
+}
+
+.stats-label {
+  color: #666;
+}
+
+.stats-value {
+  font-weight: bold;
+  color: #333;
+}
+
+/* 提示区域样式 */
+.tips-section {
+  background-color: #f0f9ff;
+  border-radius: 8rpx;
+  padding: 15rpx;
+}
+
+.tips-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #0288d1;
+  margin-bottom: 10rpx;
+}
+
+.tips-content {
+  font-size: 24rpx;
+  color: #555;
+}
+
+.tip-item {
+  padding: 5rpx 0;
+  position: relative;
+  padding-left: 15rpx;
+}
+
+.tip-item:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #0288d1;
+} 

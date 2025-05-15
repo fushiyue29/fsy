@@ -1,0 +1,79 @@
+/**app.wxss**/
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  box-sizing: border-box;
+  background-color: #f8f8f8;
+  color: #333;
+  font-size: 28rpx;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 30rpx 40rpx;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 750rpx; /* 确保内容不会过宽 */
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-primary {
+  background-color: #4696f7;
+  color: #ffffff;
+  border: none;
+  border-radius: 10rpx;
+  padding: 20rpx 40rpx;
+  font-size: 30rpx;
+}
+
+.btn-danger {
+  background-color: #f44336;
+  color: #ffffff;
+  border: none;
+  border-radius: 10rpx;
+  padding: 20rpx 40rpx;
+  font-size: 30rpx;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: #4696f7;
+}
+
+.text-danger {
+  color: #f44336;
+}
+
+.text-gray {
+  color: #999;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-bottom: 20rpx;
+  padding-left: 20rpx;
+  border-left: 8rpx solid #4696f7;
+} 

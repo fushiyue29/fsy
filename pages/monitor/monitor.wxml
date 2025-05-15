@@ -1,0 +1,253 @@
+<!--pages/monitor/monitor.wxml-->
+<view class="container">
+  <!-- 未连接设备时的提示 -->
+  <view class="no-device" wx:if="{{!deviceConnected && !simulationMode}}">
+    <text class="no-device-text">未连接设备</text>
+    <view class="no-device-message">{{errorMsg}}</view>
+    <button class="connect-button" bindtap="navigateToDevice">连接设备</button>
+  </view>
+
+  <!-- 模拟模式指示 -->
+  <view class="simulation-indicator" wx:if="{{simulationMode}}">
+    <text>模拟模式</text>
+  </view>
+
+  <!-- 已连接设备后的监测区域 -->
+  <view class="monitor-area" wx:if="{{deviceConnected || simulationMode}}">
+    <!-- 控制栏 -->
+    <view class="control-bar">
+      <view class="control-btn {{monitoring ? 'active' : ''}}" bindtap="{{monitoring ? 'stopMonitoring' : 'startMonitoring'}}">
+        <text>{{monitoring ? '停止监测' : '开始监测'}}</text>
+      </view>
+      <view class="control-btn {{recording ? 'active-recording' : ''}}" bindtap="{{recording ? 'stopRecording' : 'startRecording'}}" wx:if="{{monitoring}}">
+        <text>{{recording ? '停止记录' : '开始记录'}}</text>
+      </view>
+    </view>
+
+    <!-- 记录信息 -->
+    <view class="record-info" wx:if="{{recording}}">
+      <view class="record-time">
+        <text>开始时间: {{recordStartTime}}</text>
+      </view>
+      <view class="record-duration">
+        <text>记录时长: {{formatDuration(recordDuration)}}</text>
+      </view>
+    </view>
+
+    <!-- 视图切换 -->
+    <view class="view-tabs">
+      <view class="view-tab {{currentView === 'realtime' ? 'active' : ''}}" bindtap="switchView" data-view="realtime">
+        <text>实时波形</text>
+      </view>
+      <view class="view-tab {{currentView === 'analysis' ? 'active' : ''}}" bindtap="switchView" data-view="analysis">
+        <text>数据分析</text>
+      </view>
+    </view>
+
+    <!-- 通道切换器 -->
+    <view class="channel-toggle">
+      <view class="channel-btn {{channels.channel1.active ? 'active' : ''}}" style="background-color: {{channels.channel1.active ? channels.channel1.color : 'transparent'}}" bindtap="toggleChannel" data-channel="channel1">
+        <text>通道1</text>
+      </view>
+      <view class="channel-btn {{channels.channel2.active ? 'active' : ''}}" style="background-color: {{channels.channel2.active ? channels.channel2.color : 'transparent'}}" bindtap="toggleChannel" data-channel="channel2">
+        <text>通道2</text>
+      </view>
+      <view class="channel-btn {{channels.channel3.active ? 'active' : ''}}" style="background-color: {{channels.channel3.active ? channels.channel3.color : 'transparent'}}" bindtap="toggleChannel" data-channel="channel3">
+        <text>通道3</text>
+      </view>
+    </view>
+
+    <!-- 实时波形视图 -->
+    <view class="realtime-view" wx:if="{{currentView === 'realtime'}}">
+      <!-- 波形图容器 -->
+      <view class="waveform-container">
+        <!-- 网格线 -->
+        <view class="grid-lines">
+          <view class="grid-line" wx:for="{{5}}" wx:key="index"></view>
+          <view class="grid-line-vertical" wx:for="{{5}}" wx:key="index"></view>
+        </view>
+
+        <!-- 显示通道1波形 -->
+        <view class="waveform-panel" wx:if="{{channels.channel1.active}}">
+          <view class="waveform-label" style="color: {{channels.channel1.color}}">
+            <text>{{channels.channel1.name}}</text>
+            <text class="current-value {{!channels.channel1.isInSafeRange ? 'value-warning' : ''}}">
+              {{channels.channel1.currentValue}} {{channels.channel1.unit}}
+              <text class="status-indicator" wx:if="{{channels.channel1.currentValue > 0}}">
+                {{channels.channel1.isInSafeRange ? '✓' : '!'}}
+              </text>
+            </text>
+          </view>
+          <view class="waveform-chart">
+            <!-- 安全范围区域 -->
+            <view class="safe-range" style="bottom: {{channels.channel1.safeRange.min / 150 * 100}}%; height: {{(channels.channel1.safeRange.max - channels.channel1.safeRange.min) / 150 * 100}}%;">
+              <text class="safe-range-label safe-range-max">{{channels.channel1.safeRange.max}}</text>
+              <text class="safe-range-label safe-range-min">{{channels.channel1.safeRange.min}}</text>
+            </view>
+            <canvas id="waveform-canvas-1" canvas-id="waveform-canvas-1" class="waveform-canvas" style="width: 100%; height: 100%;"></canvas>
+          </view>
+        </view>
+        
+        <!-- 显示通道2波形 -->
+        <view class="waveform-panel" wx:if="{{channels.channel2.active}}">
+          <view class="waveform-label" style="color: {{channels.channel2.color}}">
+            <text>{{channels.channel2.name}}</text>
+            <text class="current-value {{!channels.channel2.isInSafeRange ? 'value-warning' : ''}}">
+              {{channels.channel2.currentValue}} {{channels.channel2.unit}}
+              <text class="status-indicator" wx:if="{{channels.channel2.currentValue > 0}}">
+                {{channels.channel2.isInSafeRange ? '✓' : '!'}}
+              </text>
+            </text>
+          </view>
+          <view class="waveform-chart">
+            <!-- 安全范围区域 -->
+            <view class="safe-range" style="bottom: {{channels.channel2.safeRange.min / 150 * 100}}%; height: {{(channels.channel2.safeRange.max - channels.channel2.safeRange.min) / 150 * 100}}%;">
+              <text class="safe-range-label safe-range-max">{{channels.channel2.safeRange.max}}</text>
+              <text class="safe-range-label safe-range-min">{{channels.channel2.safeRange.min}}</text>
+            </view>
+            <canvas id="waveform-canvas-2" canvas-id="waveform-canvas-2" class="waveform-canvas" style="width: 100%; height: 100%;"></canvas>
+          </view>
+        </view>
+        
+        <!-- 显示通道3波形 -->
+        <view class="waveform-panel" wx:if="{{channels.channel3.active}}">
+          <view class="waveform-label" style="color: {{channels.channel3.color}}">
+            <text>{{channels.channel3.name}}</text>
+            <text class="current-value {{!channels.channel3.isInSafeRange ? 'value-warning' : ''}}">
+              {{channels.channel3.currentValue}} {{channels.channel3.unit}}
+              <text class="status-indicator" wx:if="{{channels.channel3.currentValue > 0}}">
+                {{channels.channel3.isInSafeRange ? '✓' : '!'}}
+              </text>
+            </text>
+          </view>
+          <view class="waveform-chart">
+            <!-- 安全范围区域 -->
+            <view class="safe-range" style="bottom: {{channels.channel3.safeRange.min / 150 * 100}}%; height: {{(channels.channel3.safeRange.max - channels.channel3.safeRange.min) / 150 * 100}}%;">
+              <text class="safe-range-label safe-range-max">{{channels.channel3.safeRange.max}}</text>
+              <text class="safe-range-label safe-range-min">{{channels.channel3.safeRange.min}}</text>
+            </view>
+            <canvas id="waveform-canvas-3" canvas-id="waveform-canvas-3" class="waveform-canvas" style="width: 100%; height: 100%;"></canvas>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 数据分析视图 -->
+    <view class="analysis-view" wx:if="{{currentView === 'analysis'}}">
+      <view class="chart-area">
+        <view class="chart-title">脉搏数据分析</view>
+        
+        <!-- 数据统计区域 -->
+        <view class="stats-section">
+          <view class="stats-item" wx:if="{{channels.channel1.active}}" style="border-color: {{channels.channel1.color}}">
+            <view class="stats-header" style="color: {{channels.channel1.color}}">{{channels.channel1.name}}</view>
+            <view class="stats-body">
+              <view class="stats-row">
+                <text class="stats-label">当前值:</text>
+                <text class="stats-value {{!channels.channel1.isInSafeRange ? 'value-warning' : ''}}">
+                  {{channels.channel1.currentValue}} {{channels.channel1.unit}}
+                  <text class="status-indicator" wx:if="{{channels.channel1.currentValue > 0}}">
+                    {{channels.channel1.isInSafeRange ? '✓' : '!'}}
+                  </text>
+                </text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">平均值:</text>
+                <text class="stats-value">{{channels.channel1.average}} {{channels.channel1.unit}}</text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">最小值:</text>
+                <text class="stats-value">{{channels.channel1.min}} {{channels.channel1.unit}}</text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">最大值:</text>
+                <text class="stats-value">{{channels.channel1.max}} {{channels.channel1.unit}}</text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">安全范围:</text>
+                <text class="stats-value">{{channels.channel1.safeRange.min}} - {{channels.channel1.safeRange.max}} {{channels.channel1.unit}}</text>
+              </view>
+            </view>
+          </view>
+          
+          <view class="stats-item" wx:if="{{channels.channel2.active}}" style="border-color: {{channels.channel2.color}}">
+            <view class="stats-header" style="color: {{channels.channel2.color}}">{{channels.channel2.name}}</view>
+            <view class="stats-body">
+              <view class="stats-row">
+                <text class="stats-label">当前值:</text>
+                <text class="stats-value {{!channels.channel2.isInSafeRange ? 'value-warning' : ''}}">
+                  {{channels.channel2.currentValue}} {{channels.channel2.unit}}
+                  <text class="status-indicator" wx:if="{{channels.channel2.currentValue > 0}}">
+                    {{channels.channel2.isInSafeRange ? '✓' : '!'}}
+                  </text>
+                </text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">平均值:</text>
+                <text class="stats-value">{{channels.channel2.average}} {{channels.channel2.unit}}</text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">最小值:</text>
+                <text class="stats-value">{{channels.channel2.min}} {{channels.channel2.unit}}</text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">最大值:</text>
+                <text class="stats-value">{{channels.channel2.max}} {{channels.channel2.unit}}</text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">安全范围:</text>
+                <text class="stats-value">{{channels.channel2.safeRange.min}} - {{channels.channel2.safeRange.max}} {{channels.channel2.unit}}</text>
+              </view>
+            </view>
+          </view>
+          
+          <view class="stats-item" wx:if="{{channels.channel3.active}}" style="border-color: {{channels.channel3.color}}">
+            <view class="stats-header" style="color: {{channels.channel3.color}}">{{channels.channel3.name}}</view>
+            <view class="stats-body">
+              <view class="stats-row">
+                <text class="stats-label">当前值:</text>
+                <text class="stats-value {{!channels.channel3.isInSafeRange ? 'value-warning' : ''}}">
+                  {{channels.channel3.currentValue}} {{channels.channel3.unit}}
+                  <text class="status-indicator" wx:if="{{channels.channel3.currentValue > 0}}">
+                    {{channels.channel3.isInSafeRange ? '✓' : '!'}}
+                  </text>
+                </text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">平均值:</text>
+                <text class="stats-value">{{channels.channel3.average}} {{channels.channel3.unit}}</text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">最小值:</text>
+                <text class="stats-value">{{channels.channel3.min}} {{channels.channel3.unit}}</text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">最大值:</text>
+                <text class="stats-value">{{channels.channel3.max}} {{channels.channel3.unit}}</text>
+              </view>
+              <view class="stats-row">
+                <text class="stats-label">安全范围:</text>
+                <text class="stats-value">{{channels.channel3.safeRange.min}} - {{channels.channel3.safeRange.max}} {{channels.channel3.unit}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 提示信息 -->
+        <view class="tips-section">
+          <view class="tips-title">监测提示</view>
+          <view class="tips-content">
+            <view class="tip-item">实时数据仅供参考，如有异常请咨询医生</view>
+            <view class="tip-item">保持安静状态以获得更准确的监测结果</view>
+            <view class="tip-item">记录功能可保存当前监测数据以便后续分析</view>
+            <view class="tip-item">正常成人安静状态下心率范围约为60-100次/分</view>
+            <view class="tip-item">数值超出安全范围将以红色警告显示</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部安全区域 -->
+  <view class="bottom-safe-area" style="height: {{tabBarVisible ? 120 : 20}}rpx;"></view>
+</view> 

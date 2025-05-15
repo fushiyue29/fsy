@@ -1,0 +1,184 @@
+<!--pages/user/user.wxml-->
+<view class="container">
+  <!-- 用户信息区域 -->
+  <view class="user-profile" wx:if="{{isLoggedIn}}">
+    <view class="user-info">
+      <image class="user-avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+      <view class="user-details">
+        <text class="user-name">{{userInfo.nickName}}</text>
+        <text class="user-location" wx:if="{{userInfo.province || userInfo.city}}">{{userInfo.province}}
+          {{userInfo.city}}</text>
+      </view>
+    </view>
+    <button class="btn-logout" bindtap="logOut">退出登录</button>
+  </view>
+
+  <!-- 登录容器 -->
+  <view class="login-container" wx:else>
+    <view class="login-tip">登录以同步您的数据和设置</view>
+    <button class="btn-login" open-type="getUserInfo" bindtap="getUserProfile" wx:if="{{hasUserProfile}}">微信登录</button>
+    <button class="btn-login" open-type="getUserInfo" bindtap="getUserProfile" wx:else>微信登录</button>
+  </view>
+
+  <!-- 设备状态 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">设备</text>
+    </view>
+    <view class="status-item">
+      <text class="label">连接状态：</text>
+      <text class="value {{deviceConnected ? 'connected' : 'disconnected'}}">
+        {{deviceConnected ? '已连接' : '未连接'}}
+      </text>
+    </view>
+    <button class="btn-block" bindtap="navigateToDevice">
+      {{deviceConnected ? '管理设备' : '连接设备'}}
+    </button>
+  </view>
+
+  <!-- 监测设置 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">监测设置</text>
+    </view>
+    <view class="settings-list">
+      <view class="setting-item">
+        <text class="setting-label">自动开始监测</text>
+        <switch checked="{{settings.autoStartMonitoring}}" bindchange="toggleAutoStartMonitoring" color="#4696f7" />
+      </view>
+      <view class="setting-item">
+        <text class="setting-label">异常脉搏通知</text>
+        <switch checked="{{settings.notifyAbnormalPulse}}" bindchange="toggleNotifyAbnormalPulse" color="#4696f7" />
+      </view>
+      <view class="setting-item">
+        <text class="setting-label">数据记录间隔</text>
+        <picker bindchange="recordIntervalChange" value="{{recordIntervalValues.indexOf(settings.recordInterval)}}"
+          range="{{recordIntervalOptions}}">
+          <view class="picker-content">
+            {{recordIntervalOptions[recordIntervalValues.indexOf(settings.recordInterval)]}}
+          </view>
+        </picker>
+      </view>
+      <!-- 添加数据校准设置入口 -->
+      <view class="setting-item" bindtap="showCalibrationModal">
+        <text class="setting-label">数据校准设置</text>
+        <view class="picker-content">调整校准参数</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据校准设置模态框 -->
+  <view class="modal-mask" wx:if="{{showCalibrationModal}}">
+    <view class="calibration-modal">
+      <view class="modal-header">
+        <text class="modal-title">数据校准设置</text>
+        <text class="modal-close" bindtap="hideCalibrationModal">×</text>
+      </view>
+
+      <view class="channel-tabs">
+        <view class="channel-tab {{currentChannel === 'channel1' ? 'active' : ''}}" bindtap="changeChannel"
+          data-channel="channel1">
+          脉搏1
+        </view>
+        <view class="channel-tab {{currentChannel === 'channel2' ? 'active' : ''}}" bindtap="changeChannel"
+          data-channel="channel2">
+          脉搏2
+        </view>
+        <view class="channel-tab {{currentChannel === 'channel3' ? 'active' : ''}}" bindtap="changeChannel"
+          data-channel="channel3">
+          脉搏3
+        </view>
+      </view>
+
+      <view class="calibration-content" wx:if="{{calibrationSettings}}">
+        <view class="param-section">
+          <view class="param-header" bindtap="changeEditingParam" data-param="offset">
+            <text class="param-title">偏移量</text>
+            <text class="param-value {{editingParam === 'offset' ? 'active' : ''}}">
+              {{calibrationSettings[currentChannel].offset}}
+            </text>
+          </view>
+          <view class="param-controls" wx:if="{{editingParam === 'offset'}}">
+            <button class="param-button" bindtap="adjustCalibrationParam" data-channel="{{currentChannel}}"
+              data-param="offset" data-change="-100">-100</button>
+            <button class="param-button" bindtap="adjustCalibrationParam" data-channel="{{currentChannel}}"
+              data-param="offset" data-change="-10">-10</button>
+            <button class="param-button" bindtap="adjustCalibrationParam" data-channel="{{currentChannel}}"
+              data-param="offset" data-change="10">10</button>
+            <button class="param-button" bindtap="adjustCalibrationParam" data-channel="{{currentChannel}}"
+              data-param="offset" data-change="100">+100</button>
+          </view>
+        </view>
+
+        <view class="param-section">
+          <view class="param-header" bindtap="changeEditingParam" data-param="scale">
+            <text class="param-title">缩放系数</text>
+            <text class="param-value {{editingParam === 'scale' ? 'active' : ''}}">
+              {{calibrationSettings[currentChannel].scale}}
+            </text>
+          </view>
+          <view class="param-controls" wx:if="{{editingParam === 'scale'}}">
+            <button class="param-button" bindtap="adjustCalibrationParam" data-channel="{{currentChannel}}"
+              data-param="scale" data-change="-0.05">-0.05</button>
+            <button class="param-button" bindtap="adjustCalibrationParam" data-channel="{{currentChannel}}"
+              data-param="scale" data-change="-0.01">-0.01</button>
+            <button class="param-button" bindtap="adjustCalibrationParam" data-channel="{{currentChannel}}"
+              data-param="scale" data-change="0.01">+0.01</button>
+            <button class="param-button" bindtap="adjustCalibrationParam" data-channel="{{currentChannel}}"
+              data-param="scale" data-change="0.05">+0.05</button>
+          </view>
+        </view>
+
+        <view class="calibration-tip">
+          <text>校准计算公式:</text>
+          <text class="formula">校准值 = 原始值 × {{calibrationSettings[currentChannel].scale}} +
+            {{calibrationSettings[currentChannel].offset}}</text>
+        </view>
+
+        <button class="reset-button" bindtap="resetCalibrationSettings">
+          重置为默认校准参数
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 开发工具 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">开发工具</text>
+    </view>
+    <view class="info-list">
+      <navigator url="/pages/iconGenerator/iconGenerator" class="info-item">
+        <text class="info-label">图标生成器</text>
+        <text class="info-value">生成tabBar图标</text>
+        <view class="arrow"></view>
+      </navigator>
+    </view>
+  </view>
+
+  <!-- 应用信息 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">应用信息</text>
+    </view>
+    <view class="info-list">
+      <navigator url="/pages/about/about" class="info-item">
+        <text class="info-label">关于应用</text>
+        <text class="info-value">v{{appInfo.version}}</text>
+        <view class="arrow"></view>
+      </navigator>
+      <view class="info-item" bindtap="contactSupport">
+        <text class="info-label">联系客服</text>
+        <view class="arrow"></view>
+      </view>
+      <view class="info-item" bindtap="checkForUpdates">
+        <text class="info-label">检查更新</text>
+        <view class="arrow"></view>
+      </view>
+      <view class="info-item" bindtap="clearCache">
+        <text class="info-label">清除缓存</text>
+        <view class="arrow"></view>
+      </view>
+    </view>
+  </view>
+</view>

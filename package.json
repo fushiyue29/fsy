@@ -1,0 +1,20 @@
+{
+  "name": "multi-channel-pulse-monitor",
+  "version": "1.0.0",
+  "description": "微信小程序 - 多通道脉搏监测系统",
+  "scripts": {
+    "start": "微信开发者工具启动项目"
+  },
+  "keywords": [
+    "微信小程序",
+    "脉搏监测",
+    "多通道",
+    "健康监测"
+  ],
+  "author": "PulseMonitor Team",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "miniprogram-api-typings": "^2.8.3-1"
+  }
+}

@@ -1,0 +1,47 @@
+<!--pages/iconGenerator/iconGenerator.wxml-->
+<view class="container">
+  <view class="title">图标生成器</view>
+  
+  <view class="icon-grid">
+    <view class="icon-pair" wx:for="{{icons}}" wx:key="name">
+      <view class="icon-item">
+        <text class="icon-name">{{item.name}}</text>
+        <!-- 普通图标预览 -->
+        <text class="material-icons" style="color: {{item.color}};">
+          {{item.name === 'home' ? '\ue88a' : 
+            item.name === 'device' ? '\ue32a' : 
+            item.name === 'monitor' ? '\ue026' : 
+            item.name === 'history' ? '\ue889' : 
+            item.name === 'user' ? '\ue7fd' : ''}}
+        </text>
+        <canvas canvas-id="{{'canvas-' + item.name}}" style="width: 80px; height: 80px; opacity: 0;"></canvas>
+      </view>
+      
+      <view class="icon-item">
+        <text class="icon-name">{{item.name}}-active</text>
+        <!-- 激活图标预览 -->
+        <text class="material-icons" style="color: {{item.activeColor}};">
+          {{item.name === 'home' ? '\ue88a' : 
+            item.name === 'device' ? '\ue32a' : 
+            item.name === 'monitor' ? '\ue026' : 
+            item.name === 'history' ? '\ue889' : 
+            item.name === 'user' ? '\ue7fd' : ''}}
+        </text>
+        <canvas canvas-id="{{'canvas-' + item.name + '-active'}}" style="width: 80px; height: 80px; opacity: 0;"></canvas>
+      </view>
+    </view>
+  </view>
+  
+  <view class="actions">
+    <button class="btn-generate" bindtap="generateIcons">生成图标</button>
+    <button class="btn-apply" bindtap="applyIcons" disabled="{{!generated}}">应用图标</button>
+  </view>
+  
+  <view class="tips">
+    <text class="tip-title">使用说明：</text>
+    <text class="tip-item">1. 点击"生成图标"按钮生成所有tabBar图标</text>
+    <text class="tip-item">2. 图标生成成功后，点击"应用图标"应用到tabBar</text>
+    <text class="tip-item">3. 图标采用Material Design样式</text>
+    <text class="tip-item">4. 普通图标颜色为灰色，激活图标为蓝色</text>
+  </view>
+</view> 

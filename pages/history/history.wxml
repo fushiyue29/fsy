@@ -1,0 +1,135 @@
+<!--pages/history/history.wxml-->
+<view class="page-container">
+  <!-- 筛选区始终固定在顶部 -->
+  <view class="filter-section">
+    <view class="date-range">
+      <view class="date-picker">
+        <text class="date-label">开始日期：</text>
+        <picker mode="date" value="{{dateRange.start}}" start="2020-01-01" end="{{dateRange.end}}" bindchange="startDateChange">
+          <view class="picker-value">{{dateRange.start}}</view>
+        </picker>
+      </view>
+      
+      <view class="date-picker">
+        <text class="date-label">结束日期：</text>
+        <picker mode="date" value="{{dateRange.end}}" start="{{dateRange.start}}" end="2030-12-31" bindchange="endDateChange">
+          <view class="picker-value">{{dateRange.end}}</view>
+        </picker>
+      </view>
+    </view>
+    
+    <view class="refresh-btn" bindtap="refreshList">
+      <text class="refresh-text">刷新</text>
+    </view>
+  </view>
+  
+  <!-- 使用scroll-view来保证内容可滚动且不被覆盖 -->
+  <scroll-view 
+    scroll-y="true" 
+    class="scrollable-content" 
+    style="height: {{contentHeight}}px;"
+    enable-back-to-top="true"
+    enhanced="true"
+    show-scrollbar="true"
+    bounces="true"
+    bindscroll="onScrollEvent"
+    scroll-into-view="{{scrollIntoView}}"
+    scroll-with-animation="true">
+    
+    <!-- 加载状态 -->
+    <view wx:if="{{isLoading}}" class="loading-container">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+    
+    <!-- 空状态 -->
+    <view wx:elif="{{isEmpty}}" class="empty-container">
+      <text class="empty-text">没有找到记录</text>
+      <text class="empty-subtext">尝试调整筛选条件或创建新记录</text>
+    </view>
+    
+    <!-- 记录列表 -->
+    <view wx:else class="record-list">
+      <view wx:for="{{recordList}}" wx:key="id" class="record-item">
+        <view class="record-info" bindtap="viewRecordDetail" data-id="{{item.id}}">
+          <view class="record-time">{{item.startTime}}</view>
+          <view class="record-meta">
+            <text class="record-duration">时长: {{item.formattedDuration}}</text>
+            <text class="record-channels">3个通道</text>
+          </view>
+          <view class="record-preview">
+            <view class="preview-item">
+              <text class="preview-label">通道1</text>
+              <text class="preview-value">平均{{item.channels.channel1.average}}</text>
+            </view>
+            <view class="preview-item">
+              <text class="preview-label">通道2</text>
+              <text class="preview-value">平均{{item.channels.channel2.average}}</text>
+            </view>
+            <view class="preview-item">
+              <text class="preview-label">通道3</text>
+              <text class="preview-value">平均{{item.channels.channel3.average}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="record-actions">
+          <view class="action-btn export-btn" bindtap="exportRecord" data-id="{{item.id}}">导出</view>
+          <view class="action-btn delete-btn" bindtap="deleteRecord" data-id="{{item.id}}">删除</view>
+        </view>
+      </view>
+      
+      <!-- 底部安全区域 -->
+      <view class="bottom-safe-area" style="height: {{tabBarVisible ? 120 : 20}}rpx;"></view>
+    </view>
+  </scroll-view>
+  
+  <!-- 记录详情弹窗 -->
+  <view wx:if="{{showRecordDetail}}" class="record-detail-overlay">
+    <view class="record-detail-container">
+      <view class="detail-header">
+        <text class="detail-title">记录详情</text>
+        <view class="close-btn" bindtap="closeRecordDetail">×</view>
+      </view>
+      
+      <view class="detail-content">
+        <view class="detail-section">
+          <view class="detail-row">
+            <text class="detail-label">记录时间:</text>
+            <text class="detail-value">{{currentRecord.startTime}}</text>
+          </view>
+          <view class="detail-row">
+            <text class="detail-label">记录时长:</text>
+            <text class="detail-value">{{currentRecord.formattedDuration}}</text>
+          </view>
+        </view>
+        
+        <view class="channel-detail" wx:for="{{['channel1', 'channel2', 'channel3']}}" wx:key="*this" wx:for-item="channelKey">
+          <view class="channel-detail-header">
+            <text class="channel-detail-name">通道{{channelKey.slice(-1)}}</text>
+          </view>
+          
+          <view class="channel-detail-stats">
+            <view class="stat-card">
+              <text class="stat-title">平均值</text>
+              <text class="stat-value">{{currentRecord.channels[channelKey].average}}</text>
+            </view>
+            <view class="stat-card">
+              <text class="stat-title">最小值</text>
+              <text class="stat-value">{{currentRecord.channels[channelKey].min}}</text>
+            </view>
+            <view class="stat-card">
+              <text class="stat-title">最大值</text>
+              <text class="stat-value">{{currentRecord.channels[channelKey].max}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="detail-actions">
+          <button class="btn-primary" bindtap="exportRecord" data-id="{{currentRecord.id}}">导出数据</button>
+          <button class="btn-danger" bindtap="deleteRecord" data-id="{{currentRecord.id}}">删除记录</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

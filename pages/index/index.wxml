@@ -1,0 +1,113 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="title-large">多通道脉搏实时监测</view>
+    <view class="title">专业健康监测应用</view>
+  </view>
+  
+  <!-- 图标修复提示 -->
+  <!-- <view class="card icon-tip">
+    <view class="card-title">图标修复提示</view>
+    <view class="tip-content">
+      <view class="tip-message">
+        <text class="material-icons" style="font-size: 40rpx; margin-right: 10rpx; color: #4696f7;">info</text>
+        <text>检测到导航栏图标显示异常，可以使用图标生成器修复</text>
+      </view>
+      <view class="fix-btn-container">
+        <navigator url="/pages/iconGenerator/iconGenerator" class="fix-btn">
+          前往修复
+          <text class="material-icons" style="font-size: 32rpx; margin-left: 10rpx;">arrow_forward</text>
+        </navigator>
+      </view>
+    </view>
+  </view> -->
+  
+  <view class="card device-status">
+    <view class="card-title">设备状态</view>
+    <view class="status-content">
+      <view class="status-item">
+        <text class="label">连接状态：</text>
+        <text class="value {{deviceStatus.connected ? 'connected' : 'disconnected'}}">
+          {{deviceStatus.connected ? '已连接' : '未连接'}}
+        </text>
+      </view>
+      <block wx:if="{{deviceStatus.connected}}">
+        <view class="status-item">
+          <text class="label">设备名称：</text>
+          <text class="value">{{deviceStatus.name || 'PulseMonitor-Device'}}</text>
+        </view>
+        <view class="status-item">
+          <text class="label">信号强度：</text>
+          <view class="signal-strength">
+            <block wx:for="{{5}}" wx:key="*this">
+              <view class="signal-bar {{index < deviceStatus.signalStrength ? 'active' : ''}}"></view>
+            </block>
+          </view>
+        </view>
+      </block>
+      <view class="connect-btn-container">
+        <button class="btn-primary" bindtap="navigateToDevice">
+          {{deviceStatus.connected ? '管理设备' : '连接设备'}}
+        </button>
+      </view>
+    </view>
+  </view>
+  
+  <view class="card health-data">
+    <view class="card-title">健康数据概览</view>
+    <view class="health-content">
+      <view class="health-item">
+        <view class="health-value">{{healthData.heartRate || '--'}}</view>
+        <view class="health-label">心率(BPM)</view>
+      </view>
+      <view class="health-item">
+        <view class="health-value">{{healthData.maxHeartRate || '--'}}</view>
+        <view class="health-label">最大心率</view>
+      </view>
+      <view class="health-item">
+        <view class="health-value">{{healthData.minHeartRate || '--'}}</view>
+        <view class="health-label">最小心率</view>
+      </view>
+    </view>
+    <view class="update-time">上次更新: {{healthData.lastUpdated || '暂无数据'}}</view>
+    <view class="monitor-btn-container">
+      <button class="btn-primary" bindtap="navigateToMonitor">实时监测</button>
+    </view>
+  </view>
+  
+  <view class="card history-summary" wx:if="{{hasRecentRecords}}">
+    <view class="card-title">历史记录</view>
+    <view class="history-content">
+      <view class="history-item">
+        <text class="label">近7天记录：</text>
+        <text class="value record-count">{{recentRecordCount}}条</text>
+      </view>
+      <view class="history-btn-container">
+        <button class="btn-secondary" bindtap="navigateToHistory">查看完整历史</button>
+      </view>
+    </view>
+  </view>
+  
+  <view class="card quick-start" wx:if="{{!hasRecentRecords}}">
+    <view class="card-title">开始使用</view>
+    <view class="start-content">
+      <view class="start-tip">尚未找到任何监测记录</view>
+      <view class="start-steps">
+        <view class="step-item">1. 连接脉搏监测设备</view>
+        <view class="step-item">2. 进入实时监测页面</view>
+        <view class="step-item">3. 开始记录您的数据</view>
+      </view>
+      <view class="start-btn-container">
+        <button class="btn-primary" bindtap="navigateToMonitor">开始监测</button>
+      </view>
+    </view>
+  </view>
+  
+  <view class="wifi-tip" wx:if="{{!canUseWifi}}">
+    <icon type="warn" size="16"></icon>
+    <text>检测到WiFi功能不可用，请检查系统设置</text>
+  </view>
+
+  <!-- 底部安全区域 -->
+  <view class="bottom-safe-area" style="height: {{tabBarVisible ? 120 : 20}}rpx;"></view>
+</view> 

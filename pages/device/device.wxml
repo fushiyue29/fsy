@@ -1,0 +1,120 @@
+<!--pages/device/device.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">WiFi设备连接</text>
+    <view class="status-indicator {{deviceConnected ? 'connected' : 'disconnected'}}">
+      <text class="material-icons" style="font-size: 32rpx; margin-right: 10rpx;">{{deviceConnected ? 'wifi' : 'wifi_off'}}</text>
+      <text>{{deviceConnected ? '已连接' : '未连接'}}</text>
+    </view>
+  </view>
+  
+  <view class="network-status">
+    <text class="label">当前网络:</text>
+    <text class="value">{{networkInfo.name || '未连接'}}</text>
+    <text class="type">({{networkInfo.type}})</text>
+    <text class="material-icons device-icon">{{deviceConnected ? 'devices' : 'devices_other'}}</text>
+  </view>
+  
+  <view class="content">
+    <!-- 设备搜索区 -->
+    <view class="search-section">
+      <view class="search-header">
+        <text class="section-title">设备搜索</text>
+        <view class="action-buttons">
+          <button class="search-btn {{searching ? 'searching' : ''}}" bindtap="{{searching ? 'stopSearch' : 'startSearch'}}" disabled="{{!networkInfo.connected}}">
+            <text class="material-icons" style="font-size: 32rpx; margin-right: 10rpx;">search</text>
+            {{searching ? '停止搜索' : '搜索设备'}}
+          </button>
+        </view>
+      </view>
+      
+      <!-- IP地址手动输入 -->
+      <view class="manual-input">
+        <view class="input-row">
+          <input type="text" placeholder="输入设备IP地址 (如192.168.1.100)" bindinput="onIPInput" value="{{manualIP}}" class="ip-input" />
+          <input type="number" placeholder="端口" bindinput="onPortInput" value="{{manualPort}}" class="port-input" />
+        </view>
+        <button class="add-btn" bindtap="addDeviceByIP" disabled="{{!isValidIP}}">
+          <text class="material-icons" style="font-size: 32rpx; margin-right: 10rpx;">add</text>
+          添加设备
+        </button>
+      </view>
+      
+      <!-- 设备列表 -->
+      <view class="device-list {{devices.length > 0 ? '' : 'empty'}}">
+        <view wx:if="{{searching && devices.length === 0}}" class="searching-tip">
+          <text>正在搜索设备...</text>
+        </view>
+        
+        <view wx:if="{{!searching && devices.length === 0}}" class="empty-tip">
+          <text>未找到设备，请确保设备已开启并与手机连接到同一WiFi网络</text>
+        </view>
+        
+        <view class="device-item" wx:for="{{devices}}" wx:key="id" bindtap="connectToDevice" data-device="{{item}}">
+          <text class="material-icons" style="font-size: 40rpx; margin-right: 15rpx;">device_hub</text>
+          <view class="device-info">
+            <text class="device-name">{{item.name}}</text>
+            <text class="device-ip">{{item.ip}}{{item.port !== 80 ? ':'+item.port : ''}}</text>
+          </view>
+          <view class="connect-btn">连接</view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 已连接设备信息 -->
+    <view class="connected-device-section" wx:if="{{deviceConnected}}">
+      <text class="section-title">已连接设备</text>
+      <view class="device-details">
+        <view class="detail-row">
+          <text class="detail-label">设备名称</text>
+          <text class="detail-value">{{connectedDevice.name}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">IP地址</text>
+          <text class="detail-value">{{connectedDevice.ip}}{{connectedDevice.port !== 80 ? ':'+connectedDevice.port : ''}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">连接状态</text>
+          <text class="detail-value connected">已连接</text>
+        </view>
+      </view>
+      
+      <button class="disconnect-btn" bindtap="disconnectDevice">
+        <text class="material-icons" style="font-size: 32rpx; margin-right: 10rpx;">link_off</text>
+        断开连接
+      </button>
+    </view>
+    
+    <!-- 模拟模式切换 -->
+    <view class="simulation-section">
+      <view class="simulation-toggle">
+        <text class="toggle-label">模拟模式</text>
+        <switch checked="{{simulationMode}}" bindchange="toggleSimulationMode" color="#07c160"></switch>
+      </view>
+      <text class="simulation-desc" wx:if="{{simulationMode}}">已开启模拟模式，将使用模拟数据</text>
+    </view>
+    
+    <!-- 提示信息 -->
+    <view class="tips-section">
+      <text class="section-title">连接提示</text>
+      <view class="tips-content">
+        <view class="tip-item">确保设备和手机连接到同一WiFi网络</view>
+        <view class="tip-item">设备默认端口通常为80或8080</view>
+        <view class="tip-item">如无法自动发现设备，可通过IP地址手动添加</view>
+        <view class="tip-item">连接成功后，进入监测页面开始记录数据</view>
+        <view class="tip-item">如无法连接设备，可开启模拟模式进行测试</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 添加设备模态框 -->
+<view class="modal" wx:if="{{showAddDeviceModal}}">
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="modal-title">添加设备</text>
+      <text class="material-icons" style="font-size: 40rpx;" bindtap="hideAddDeviceModal">close</text>
+    </view>
+    <!-- 模态框内容 -->
+  </view>
+</view> 
